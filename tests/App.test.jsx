@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import App, { filterCustomers, getPaymentSummary, getCallStatusClass } from '../src/App.jsx'
+import App, { filterCustomers, getPaymentSummary, getCallStatusClass, roleDefinitions } from '../src/App.jsx'
 
 afterEach(() => cleanup())
 
@@ -69,5 +69,30 @@ describe('customer class manager requirements', () => {
     expect(within(row).getByText('입금 전')).toBeInTheDocument()
     expect(within(row).getByText('통화후 입금대기중')).toBeInTheDocument()
     expect(row).toHaveClass('call-waiting-payment')
+  })
+
+  it('defines owner, manager, and staff permissions for the admin page', () => {
+    expect(roleDefinitions.owner.canManageRoles).toBe(true)
+    expect(roleDefinitions.owner.canExportAll).toBe(true)
+    expect(roleDefinitions.manager.canManageRoles).toBe(false)
+    expect(roleDefinitions.manager.canDeleteCustomers).toBe(false)
+    expect(roleDefinitions.staff.dataScope).toBe('assigned')
+  })
+
+  it('lets the 최고 관리자 open the admin page and change a staff role', () => {
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('회사 비밀번호'), { target: { value: 'company1234' } })
+    fireEvent.click(screen.getByRole('button', { name: '입장하기' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '관리자 설정' }))
+
+    expect(screen.getByRole('heading', { name: '관리자 권한 설정' })).toBeInTheDocument()
+    expect(screen.getAllByText('대표').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('돈·권한·삭제·전체 다운로드 최종 통제').length).toBeGreaterThan(0)
+
+    fireEvent.change(screen.getByLabelText('최매니저 권한'), { target: { value: 'manager' } })
+
+    const managerRow = screen.getByTestId('staff-row-최매니저')
+    expect(within(managerRow).getByText('운영 총괄')).toBeInTheDocument()
   })
 })

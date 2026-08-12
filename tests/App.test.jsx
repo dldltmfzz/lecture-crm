@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import App, { filterCustomers, getPaymentSummary, getCallStatusClass, roleDefinitions } from '../src/App.jsx'
+import App, { filterCustomers, getPaymentSummary, getCallStatusClass, roleDefinitions, canCreateCredentials } from '../src/App.jsx'
 
 afterEach(() => cleanup())
 
@@ -94,5 +94,56 @@ describe('customer class manager requirements', () => {
 
     const managerRow = screen.getByTestId('staff-row-최매니저')
     expect(within(managerRow).getByText('운영 총괄')).toBeInTheDocument()
+  })
+
+  it('only allows credential creation when name and phone are pre-approved by the owner', () => {
+    const approvedApplicants = [
+      { name: '김승인', phone: '010-7777-7777', status: 'approved' },
+      { name: '박대기', phone: '010-8888-8888', status: 'pending' },
+    ]
+
+    expect(canCreateCredentials(approvedApplicants, '김승인', '010-7777-7777')).toBe(true)
+    expect(canCreateCredentials(approvedApplicants, '박대기', '010-8888-8888')).toBe(false)
+    expect(canCreateCredentials(approvedApplicants, '김승인', '010-0000-0000')).toBe(false)
+  })
+
+  it('lets a user request signup, create credentials after owner approval, and wait for final approval', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: '회원가입 요청' }))
+    fireEvent.change(screen.getByLabelText('가입 승인용 이름'), { target: { value: '김승인' } })
+    fireEvent.change(screen.getByLabelText('가입 승인용 핸드폰번호'), { target: { value: '010-7777-7777' } })
+    fireEvent.click(screen.getByRole('button', { name: '가입 승인 요청하기' }))
+    expect(screen.getByText('대표 최종 승인 대기중입니다.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '대표 로그인' }))
+    fireEvent.change(screen.getByLabelText('회사 비밀번호'), { target: { value: 'company1234' } })
+    fireEvent.click(screen.getByRole('button', { name: '입장하기' }))
+    fireEvent.click(screen.getByRole('button', { name: '관리자 설정' }))
+    const applicantRow = screen.getByTestId('signup-row-김승인')
+    fireEvent.click(within(applicantRow).getByRole('button', { name: '1차 승인' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '잠금' }))
+    fireEvent.click(screen.getByRole('button', { name: '아이디 만들기' }))
+    fireEvent.change(screen.getByLabelText('승인받은 이름'), { target: { value: '김승인' } })
+    fireEvent.change(screen.getByLabelText('승인받은 핸드폰번호'), { target: { value: '010-7777-7777' } })
+    fireEvent.change(screen.getByLabelText('새 아이디'), { target: { value: 'kimstaff' } })
+    fireEvent.change(screen.getByLabelText('새 비밀번호'), { target: { value: 'pass1234' } })
+    fireEvent.click(screen.getByRole('button', { name: '아이디 비밀번호 만들기' }))
+    expect(screen.getByText('아이디 생성 완료. 대표 최종 승인을 기다려 주세요.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '대표 로그인' }))
+    fireEvent.change(screen.getByLabelText('회사 비밀번호'), { target: { value: 'company1234' } })
+    fireEvent.click(screen.getByRole('button', { name: '입장하기' }))
+    fireEvent.click(screen.getByRole('button', { name: '관리자 설정' }))
+    fireEvent.click(within(screen.getByTestId('signup-row-김승인')).getByRole('button', { name: '최종 승인' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '잠금' }))
+    fireEvent.click(screen.getByRole('button', { name: '직원 로그인 화면' }))
+    fireEvent.change(screen.getByLabelText('아이디'), { target: { value: 'kimstaff' } })
+    fireEvent.change(screen.getByLabelText('비밀번호'), { target: { value: 'pass1234' } })
+    fireEvent.click(screen.getByRole('button', { name: '직원 로그인' }))
+
+    expect(screen.getByText('고객 관리 대시보드')).toBeInTheDocument()
   })
 })

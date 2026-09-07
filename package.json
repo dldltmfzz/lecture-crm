@@ -1,10 +1,6 @@
 {
   "name": "aileaders-os-bootstrap",
-  "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "node bootstrap.mjs"
-  },
+  "version": "1.0.0",
   "packageManager": "pnpm@10.15.0"
 }

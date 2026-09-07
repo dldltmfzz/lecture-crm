@@ -1,17 +1,18 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-let b64 = '';
-for (let i = 0; i < 5; i += 1) {
-  const n = String(i).padStart(2, '0');
-  b64 += fs.readFileSync(`source.part${n}`, 'utf8').trim();
-}
+const parts = [
+  'bundle/exact-00',
+  'bundle/exact-01',
+  'bundle/exact-0203',
+  'bundle/exact-0405',
+  'bundle/exact-0607',
+  'bundle/exact-0809',
+  'bundle/exact-1011',
+  'bundle/exact-1213',
+  'bundle/exact-1415',
+];
 
-fs.writeFileSync('/tmp/aileaders.txz', Buffer.from(b64, 'base64'));
-
-const extract = "import tarfile; t=tarfile.open('/tmp/aileaders.txz','r:xz'); t.extractall('.'); t.close()";
-try {
-  execFileSync('python3', ['-c', extract], { stdio: 'inherit' });
-} catch {
-  execFileSync('python', ['-c', extract], { stdio: 'inherit' });
-}
+const b64 = parts.map((p) => fs.readFileSync(p, 'utf8').trim()).join('');
+fs.writeFileSync('/tmp/aileaders.tgz', Buffer.from(b64, 'base64'));
+execFileSync('tar', ['-xzf', '/tmp/aileaders.tgz', '-C', '.'], { stdio: 'inherit' });

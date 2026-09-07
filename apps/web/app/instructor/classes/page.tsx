@@ -1,0 +1,3 @@
+import { ConnectionPending, PortalAssignmentList } from "@/features/instructors/components/portal-states";
+import { getCurrentInstructor, getInstructorAssignments } from "@/features/instructors/queries";
+export default async function ClassesPage(){const instructor=await getCurrentInstructor();if(!instructor)return <ConnectionPending/>;const rows=await getInstructorAssignments({instructorId:instructor.id,includePast:true});return <div className="space-y-6"><div><div className="text-[11px] font-semibold tracking-[.16em] text-[#7C5CFF]">AILeaders INSTRUCTOR</div><h1 className="mt-2 text-3xl font-semibold">My Classes</h1><p className="mt-2 text-sm text-[#686F7D]">배정 요청부터 완료된 강의까지 나의 출강 이력을 확인합니다.</p></div><PortalAssignmentList rows={rows} empty="강의 이력이 없습니다."/></div>}

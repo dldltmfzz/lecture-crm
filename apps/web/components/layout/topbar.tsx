@@ -1,0 +1,3 @@
+import { Bell, Search } from "lucide-react";
+import { logoutAction } from "@/features/auth/actions";
+export function AppTopbar({name}:{name:string}){return <header className="h-16 border-b border-white/8 flex items-center justify-between px-5 md:px-8"><div className="hidden sm:flex items-center gap-2 text-sm text-[#686F7D]"><Search size={16}/><span>Search AILeaders</span><kbd className="ml-2 rounded border border-white/10 px-1.5 py-0.5 text-[10px]">⌘K</kbd></div><div className="ml-auto flex items-center gap-4"><Bell size={18} className="text-[#A3A9B5]"/><span className="text-sm">{name}</span><form action={logoutAction}><button className="text-xs text-[#686F7D] hover:text-white">Logout</button></form></div></header>}

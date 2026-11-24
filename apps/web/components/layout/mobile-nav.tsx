@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { House, Users, Plus, CalendarDays, Menu } from "lucide-react";
+export function MobileNavigation(){return <nav className="fixed bottom-0 inset-x-0 z-20 flex md:hidden items-center justify-around border-t border-white/10 bg-[#0D0F13]/95 px-2 py-2 backdrop-blur"><Link href="/home" className="p-2"><House size={20}/></Link><Link href="/customers" className="p-2"><Users size={20}/></Link><button className="rounded-full bg-[#F5F7FA] p-3 text-[#08090C]"><Plus size={20}/></button><Link href="/programs" className="p-2"><CalendarDays size={20}/></Link><button className="p-2"><Menu size={20}/></button></nav>}

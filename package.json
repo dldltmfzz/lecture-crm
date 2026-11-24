@@ -1,23 +1,27 @@
 {
-  "name": "customer-class-manager",
-  "version": "1.0.0",
+  "name": "aileaders-os",
   "private": true,
-  "type": "module",
+  "packageManager": "pnpm@10.15.0",
   "scripts": {
-    "test": "vitest --run",
-    "build": "vite build",
-    "start": "vite --host 0.0.0.0"
+    "dev": "turbo dev",
+    "local": "pnpm --filter @aileaders/web dev",
+    "verify:local": "pnpm --filter @aileaders/web typecheck && pnpm --filter @aileaders/web test && pnpm --filter @aileaders/web lint",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "format": "prettier --write ."
   },
-  "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "vitest": "latest",
-    "jsdom": "latest",
-    "@testing-library/react": "latest",
-    "@testing-library/jest-dom": "latest"
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.9.0",
+    "prettier": "^3.6.0"
   },
-  "devDependencies": {}
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "unrs-resolver",
+      "workerd"
+    ]
+  }
 }

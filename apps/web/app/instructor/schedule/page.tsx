@@ -1,0 +1,4 @@
+import { ConnectionPending, PortalAssignmentList } from "@/features/instructors/components/portal-states";
+import { getCurrentInstructor, getInstructorAssignments } from "@/features/instructors/queries";
+export default async function SchedulePage(){const instructor=await getCurrentInstructor();if(!instructor)return <ConnectionPending/>;const rows=(await getInstructorAssignments({instructorId:instructor.id,includePast:false})).filter(r=>r.status==="CONFIRMED");return <div className="space-y-6"><Header title="My Schedule" description="운영자가 최종 확정한 출강 일정입니다."/><PortalAssignmentList rows={rows} empty="확정된 출강 일정이 없습니다."/></div>}
+function Header({title,description}:{title:string;description:string}){return <div><div className="text-[11px] font-semibold tracking-[.16em] text-[#7C5CFF]">AILeaders INSTRUCTOR</div><h1 className="mt-2 text-3xl font-semibold">{title}</h1><p className="mt-2 text-sm text-[#686F7D]">{description}</p></div>}

@@ -1,0 +1,1 @@
+import { PageHeader } from "./page-header";export function ComingSoon({title}:{title:string}){return <div className="space-y-8"><PageHeader title={title} description="Sprint 01에서는 앱 구조와 권한 경계만 준비했습니다. 실제 비즈니스 기능은 다음 Sprint에서 구현합니다."/><div className="rounded-[14px] border border-white/8 bg-[#111318] p-10 text-[#686F7D]">Coming Soon · Foundation ready</div></div>}
